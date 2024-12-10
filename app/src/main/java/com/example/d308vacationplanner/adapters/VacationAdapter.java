@@ -42,6 +42,12 @@ public class VacationAdapter extends RecyclerView.Adapter<VacationAdapter.Vacati
         return vacationList.size();
     }
 
+    public void updateData(List<Vacation> newVacations) {
+        vacationList.clear(); // Clear existing data
+        vacationList.addAll(newVacations); // Add new data
+        notifyDataSetChanged(); // Notify the adapter that the dataset has changed
+    }
+
     public static class VacationViewHolder extends RecyclerView.ViewHolder {
         final TextView titleTextView;
 
