@@ -14,6 +14,14 @@ public class Vacation {
     private String startDate;
     private String endDate;
 
+    // Constructor
+    public Vacation(String title, String hotel, String startDate, String endDate) {
+        this.title = title;
+        this.hotel = hotel;
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
+
     // Getters and Setters
     public int getId() {
         return id;
