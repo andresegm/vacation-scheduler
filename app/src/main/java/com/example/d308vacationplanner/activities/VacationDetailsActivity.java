@@ -5,6 +5,10 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -53,12 +57,20 @@ public class VacationDetailsActivity extends AppCompatActivity {
             String updatedStartDate = startDateEditText.getText().toString();
             String updatedEndDate = endDateEditText.getText().toString();
 
+            // Validate date format
+            if (!isValidDate(updatedStartDate) || !isValidDate(updatedEndDate)) {
+                Toast.makeText(this, "Invalid date format. Please use MM/dd/yy.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Validate date logic
+            if (!isEndDateAfterStartDate(updatedStartDate, updatedEndDate)) {
+                Toast.makeText(this, "End date must be after the start date.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             // Create updated vacation object
             Vacation updatedVacation = new Vacation(vacationId, updatedTitle, updatedHotel, updatedStartDate, updatedEndDate);
-
-            // Log the updated vacation details
-            Log.d("VacationDetailsActivity", "Saving updated vacation: ID=" + updatedVacation.getId() +
-                    ", Title=" + updatedVacation.getTitle());
 
             // Save updates to the database
             repository.updateVacation(updatedVacation);
@@ -69,4 +81,29 @@ public class VacationDetailsActivity extends AppCompatActivity {
         // Back button functionality
         backButton.setOnClickListener(v -> finish());
     }
+
+    // Validates if the date is in MM/dd/yy format
+    private boolean isValidDate(String date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy", Locale.US);
+        sdf.setLenient(false);
+        try {
+            sdf.parse(date);
+            return true;
+        } catch (ParseException e) {
+            return false;
+        }
+    }
+
+    // Validates if the end date is after the start date
+    private boolean isEndDateAfterStartDate(String startDate, String endDate) {
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy", Locale.US);
+        try {
+            Date start = sdf.parse(startDate);
+            Date end = sdf.parse(endDate);
+            return end != null && start != null && end.after(start);
+        } catch (ParseException e) {
+            return false;
+        }
+    }
+
 }
