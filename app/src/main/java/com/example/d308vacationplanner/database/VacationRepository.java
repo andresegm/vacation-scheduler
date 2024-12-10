@@ -1,6 +1,7 @@
 package com.example.d308vacationplanner.database;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
@@ -29,20 +30,29 @@ public class VacationRepository {
 
     // Update a vacation
     public void updateVacation(Vacation vacation) {
+        Log.d("VacationRepository", "Updating vacation: ID=" + vacation.getId() + ", Title=" + vacation.getTitle());
         executorService.execute(() -> vacationDAO.updateVacation(vacation));
     }
 
+
     // Delete a vacation with validation
-    public boolean deleteVacation(Vacation vacation) {
-        int excursionCount = vacationDAO.countExcursionsForVacation(vacation.getId());
-        if (excursionCount > 0) {
-            // Block deletion if excursions exist
-            return false;
-        } else {
-            executorService.execute(() -> vacationDAO.deleteVacation(vacation));
-            return true;
-        }
+    public void deleteVacation(Vacation vacation, DeletionCallback callback) {
+        executorService.execute(() -> {
+            int excursionCount = vacationDAO.countExcursionsForVacation(vacation.getId());
+            if (excursionCount > 0) {
+                callback.onFailure("Cannot delete vacation with associated excursions.");
+            } else {
+                vacationDAO.deleteVacation(vacation);
+                callback.onSuccess();
+            }
+        });
     }
+
+    public interface DeletionCallback {
+        void onSuccess();
+        void onFailure(String message);
+    }
+
 
     // Fetch all vacations
     public LiveData<List<Vacation>> getAllVacations() {

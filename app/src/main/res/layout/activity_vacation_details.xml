@@ -7,24 +7,23 @@
     android:padding="16dp">
 
     <!-- Title -->
-    <TextView
+    <EditText
         android:id="@+id/vacation_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Vacation Title"
+        android:hint="Enter Title"
         android:textSize="20sp"
-        android:textStyle="bold"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginBottom="8dp" />
 
     <!-- Hotel -->
-    <TextView
+    <EditText
         android:id="@+id/vacation_hotel"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Hotel or Place of Stay"
+        android:hint="Enter Hotel or Place of Stay"
         android:textSize="16sp"
         app:layout_constraintTop_toBottomOf="@id/vacation_title"
         app:layout_constraintStart_toStartOf="parent"
@@ -32,11 +31,11 @@
         android:layout_marginBottom="8dp" />
 
     <!-- Start Date -->
-    <TextView
+    <EditText
         android:id="@+id/vacation_start_date"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Start Date"
+        android:hint="Enter Start Date (MM/dd/yy)"
         android:textSize="16sp"
         app:layout_constraintTop_toBottomOf="@id/vacation_hotel"
         app:layout_constraintStart_toStartOf="parent"
@@ -44,16 +43,27 @@
         android:layout_marginBottom="8dp" />
 
     <!-- End Date -->
-    <TextView
+    <EditText
         android:id="@+id/vacation_end_date"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="End Date"
+        android:hint="Enter End Date (MM/dd/yy)"
         android:textSize="16sp"
         app:layout_constraintTop_toBottomOf="@id/vacation_start_date"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginBottom="16dp" />
+
+    <!-- Save Button -->
+    <Button
+        android:id="@+id/button_save"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Save"
+        app:layout_constraintTop_toBottomOf="@id/vacation_end_date"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="8dp" />
 
     <!-- Back Button -->
     <Button
@@ -61,18 +71,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Back"
-        app:layout_constraintTop_toBottomOf="@id/vacation_end_date"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="8dp" />
-
-    <!-- Edit Button -->
-    <Button
-        android:id="@+id/button_edit"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Edit"
-        app:layout_constraintTop_toBottomOf="@id/button_back"
+        app:layout_constraintTop_toBottomOf="@id/button_save"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

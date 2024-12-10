@@ -15,7 +15,8 @@ public class Vacation {
     private String endDate;
 
     // Constructor
-    public Vacation(String title, String hotel, String startDate, String endDate) {
+    public Vacation(int id, String title, String hotel, String startDate, String endDate) {
+        this.id = id;
         this.title = title;
         this.hotel = hotel;
         this.startDate = startDate;

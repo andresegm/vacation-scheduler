@@ -25,15 +25,16 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView vacationList = findViewById(R.id.vacation_list);
         vacationList.setLayoutManager(new LinearLayoutManager(this));
 
-        // Sample data
+        // Sample data with IDs
         List<Vacation> sampleVacations = new ArrayList<>();
-        sampleVacations.add(new Vacation("Spring Break", "Grand Beach Resort", "03/20/2024", "03/27/2024"));
-        sampleVacations.add(new Vacation("Summer Vacation", "Sunny Paradise Hotel", "07/01/2024", "07/15/2024"));
+        sampleVacations.add(new Vacation(1, "Spring Break", "Grand Beach Resort", "03/20/2024", "03/27/2024"));
+        sampleVacations.add(new Vacation(2, "Summer Vacation", "Sunny Paradise Hotel", "07/01/2024", "07/15/2024"));
 
         // Set up the adapter
         VacationAdapter adapter = new VacationAdapter(sampleVacations, vacation -> {
             // Navigate to VacationDetailsActivity on item click
             Intent intent = new Intent(MainActivity.this, VacationDetailsActivity.class);
+            intent.putExtra("id", vacation.getId());
             intent.putExtra("title", vacation.getTitle());
             intent.putExtra("hotel", vacation.getHotel());
             intent.putExtra("startDate", vacation.getStartDate());
