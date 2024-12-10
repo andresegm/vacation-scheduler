@@ -30,4 +30,6 @@ public interface VacationDAO {
     @Query("SELECT * FROM vacations ORDER BY startDate ASC")
     LiveData<List<Vacation>> getAllVacations();
 
+    @Query("SELECT COUNT(*) FROM excursions WHERE vacationId = :vacationId")
+    int countExcursionsForVacation(int vacationId);
 }

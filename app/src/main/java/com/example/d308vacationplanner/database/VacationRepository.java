@@ -32,9 +32,16 @@ public class VacationRepository {
         executorService.execute(() -> vacationDAO.updateVacation(vacation));
     }
 
-    // Delete a vacation
-    public void deleteVacation(Vacation vacation) {
-        executorService.execute(() -> vacationDAO.deleteVacation(vacation));
+    // Delete a vacation with validation
+    public boolean deleteVacation(Vacation vacation) {
+        int excursionCount = vacationDAO.countExcursionsForVacation(vacation.getId());
+        if (excursionCount > 0) {
+            // Block deletion if excursions exist
+            return false;
+        } else {
+            executorService.execute(() -> vacationDAO.deleteVacation(vacation));
+            return true;
+        }
     }
 
     // Fetch all vacations

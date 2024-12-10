@@ -8,8 +8,9 @@ import androidx.room.RoomDatabase;
 
 import com.example.d308vacationplanner.dao.VacationDAO;
 import com.example.d308vacationplanner.entities.Vacation;
+import com.example.d308vacationplanner.entities.Excursion;
 
-@Database(entities = {Vacation.class}, version = 1, exportSchema = false)
+@Database(entities = {Vacation.class, Excursion.class}, version = 1, exportSchema = false)
 public abstract class VacationDatabase extends RoomDatabase {
 
     public abstract VacationDAO vacationDAO();
