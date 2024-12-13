@@ -5,11 +5,14 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.d308vacationplanner.R;
@@ -21,10 +24,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-
-import android.provider.Settings;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AlertDialog;
 
 public class VacationDetailsActivity extends AppCompatActivity {
 
@@ -39,6 +38,7 @@ public class VacationDetailsActivity extends AppCompatActivity {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
             checkExactAlarmPermission();
         }
+
         // Initialize repository
         repository = new VacationRepository(getApplicationContext());
 
@@ -50,6 +50,7 @@ public class VacationDetailsActivity extends AppCompatActivity {
 
         Button saveButton = findViewById(R.id.button_save);
         Button backButton = findViewById(R.id.button_back);
+        Button shareButton = findViewById(R.id.button_share);
 
         // Retrieve vacation details from Intent
         int vacationId = getIntent().getIntExtra("id", -1);
@@ -96,9 +97,23 @@ public class VacationDetailsActivity extends AppCompatActivity {
             finish(); // Close the activity
         });
 
-
         // Back button functionality
         backButton.setOnClickListener(v -> finish());
+
+        // Share button functionality
+        shareButton.setOnClickListener(v -> {
+            String vacationDetails = "Vacation Details:\n" +
+                    "Title: " + titleEditText.getText().toString() + "\n" +
+                    "Hotel: " + hotelEditText.getText().toString() + "\n" +
+                    "Start Date: " + startDateEditText.getText().toString() + "\n" +
+                    "End Date: " + endDateEditText.getText().toString();
+
+            Intent shareIntent = new Intent();
+            shareIntent.setAction(Intent.ACTION_SEND);
+            shareIntent.putExtra(Intent.EXTRA_TEXT, vacationDetails);
+            shareIntent.setType("text/plain");
+            startActivity(Intent.createChooser(shareIntent, "Share Vacation Details"));
+        });
     }
 
     // Method to schedule vacation notifications
