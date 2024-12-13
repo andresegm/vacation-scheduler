@@ -3,6 +3,7 @@ package com.example.d308vacationplanner.adapters;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,9 +17,17 @@ import java.util.List;
 public class ExcursionAdapter extends RecyclerView.Adapter<ExcursionAdapter.ExcursionViewHolder> {
 
     private List<Excursion> excursions;
+    private final OnExcursionActionListener actionListener;
 
-    public ExcursionAdapter(List<Excursion> excursions) {
+    // Listener interface for actions
+    public interface OnExcursionActionListener {
+        void onExcursionAction(Excursion excursion, String action);
+    }
+
+    // Constructor
+    public ExcursionAdapter(List<Excursion> excursions, OnExcursionActionListener actionListener) {
         this.excursions = excursions;
+        this.actionListener = actionListener;
     }
 
     @NonNull
@@ -33,6 +42,12 @@ public class ExcursionAdapter extends RecyclerView.Adapter<ExcursionAdapter.Excu
         Excursion excursion = excursions.get(position);
         holder.titleTextView.setText(excursion.getTitle());
         holder.dateTextView.setText(excursion.getDate());
+
+        // Handle delete button
+        holder.deleteButton.setOnClickListener(v -> actionListener.onExcursionAction(excursion, "DELETE"));
+
+        // Handle edit button
+        holder.editButton.setOnClickListener(v -> actionListener.onExcursionAction(excursion, "EDIT"));
     }
 
     @Override
@@ -49,11 +64,15 @@ public class ExcursionAdapter extends RecyclerView.Adapter<ExcursionAdapter.Excu
     public static class ExcursionViewHolder extends RecyclerView.ViewHolder {
         TextView titleTextView;
         TextView dateTextView;
+        Button deleteButton;
+        Button editButton;
 
         public ExcursionViewHolder(@NonNull View itemView) {
             super(itemView);
             titleTextView = itemView.findViewById(R.id.excursion_title);
             dateTextView = itemView.findViewById(R.id.excursion_date);
+            deleteButton = itemView.findViewById(R.id.delete_excursion_button);
+            editButton = itemView.findViewById(R.id.edit_excursion_button);
         }
     }
 }

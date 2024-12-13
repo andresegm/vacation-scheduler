@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.d308vacationplanner.R;
 import com.example.d308vacationplanner.adapters.ExcursionAdapter;
 import com.example.d308vacationplanner.database.VacationRepository;
+import com.example.d308vacationplanner.entities.Excursion;
 import com.example.d308vacationplanner.entities.Vacation;
 import com.example.d308vacationplanner.receivers.VacationNotificationReceiver;
 
@@ -32,6 +33,8 @@ import java.util.Locale;
 public class VacationDetailsActivity extends AppCompatActivity {
 
     private VacationRepository repository;
+    private ExcursionAdapter excursionAdapter;
+    private int vacationId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,15 +58,16 @@ public class VacationDetailsActivity extends AppCompatActivity {
         Button saveButton = findViewById(R.id.button_save);
         Button shareButton = findViewById(R.id.button_share);
         Button backButton = findViewById(R.id.button_back);
+        Button addExcursionButton = findViewById(R.id.button_add_excursion);
 
         // RecyclerView for excursions
         RecyclerView excursionList = findViewById(R.id.excursion_list);
         excursionList.setLayoutManager(new LinearLayoutManager(this));
-        ExcursionAdapter excursionAdapter = new ExcursionAdapter(new ArrayList<>());
+        excursionAdapter = new ExcursionAdapter(new ArrayList<>(), this::handleExcursionAction);
         excursionList.setAdapter(excursionAdapter);
 
         // Retrieve vacation details from Intent
-        int vacationId = getIntent().getIntExtra("id", -1); // Ensure ID is passed from MainActivity
+        vacationId = getIntent().getIntExtra("id", -1);
         String title = getIntent().getStringExtra("title");
         String hotel = getIntent().getStringExtra("hotel");
         String startDate = getIntent().getStringExtra("startDate");
@@ -89,29 +93,22 @@ public class VacationDetailsActivity extends AppCompatActivity {
             String updatedStartDate = startDateEditText.getText().toString();
             String updatedEndDate = endDateEditText.getText().toString();
 
-            // Validate date format
             if (!isValidDate(updatedStartDate) || !isValidDate(updatedEndDate)) {
                 Toast.makeText(this, "Invalid date format. Please use MM/dd/yy.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            // Validate date logic
             if (!isEndDateAfterStartDate(updatedStartDate, updatedEndDate)) {
                 Toast.makeText(this, "End date must be after the start date.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            // Create updated vacation object
             Vacation updatedVacation = new Vacation(vacationId, updatedTitle, updatedHotel, updatedStartDate, updatedEndDate);
 
-            // Save updates to the database
             repository.updateVacation(updatedVacation);
-
-            // Schedule notifications for vacation start and end dates
             scheduleNotifications(updatedVacation);
-
             Toast.makeText(this, "Vacation updated successfully", Toast.LENGTH_SHORT).show();
-            finish(); // Close the activity
+            finish();
         });
 
         // Share button functionality
@@ -129,11 +126,30 @@ public class VacationDetailsActivity extends AppCompatActivity {
             startActivity(Intent.createChooser(shareIntent, "Share Vacation Details"));
         });
 
+        // Add Excursion button functionality
+        addExcursionButton.setOnClickListener(v -> {
+            Excursion newExcursion = new Excursion(0, "New Excursion", "12/25/2024", vacationId);
+            repository.insertExcursion(newExcursion);
+            Toast.makeText(this, "Excursion added", Toast.LENGTH_SHORT).show();
+        });
+
         // Back button functionality
         backButton.setOnClickListener(v -> finish());
     }
 
-    // Method to schedule vacation notifications
+    private void handleExcursionAction(Excursion excursion, String action) {
+        switch (action) {
+            case "DELETE":
+                repository.deleteExcursion(excursion);
+                Toast.makeText(this, "Excursion deleted", Toast.LENGTH_SHORT).show();
+                break;
+            case "EDIT":
+                // Logic for editing excursions
+                Toast.makeText(this, "Edit functionality not implemented yet", Toast.LENGTH_SHORT).show();
+                break;
+        }
+    }
+
     private void scheduleNotifications(Vacation vacation) {
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy", Locale.US);
@@ -143,7 +159,6 @@ public class VacationDetailsActivity extends AppCompatActivity {
             Date endDate = sdf.parse(vacation.getEndDate());
 
             if (startDate != null && endDate != null) {
-                // Start date notification
                 Intent startIntent = new Intent(this, VacationNotificationReceiver.class);
                 startIntent.putExtra("title", "Vacation Alert");
                 startIntent.putExtra("message", "Your vacation starts today!");
@@ -154,7 +169,6 @@ public class VacationDetailsActivity extends AppCompatActivity {
                         PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
                 );
 
-                // End date notification
                 Intent endIntent = new Intent(this, VacationNotificationReceiver.class);
                 endIntent.putExtra("title", "Vacation Alert");
                 endIntent.putExtra("message", "Your vacation ends today!");
@@ -165,7 +179,6 @@ public class VacationDetailsActivity extends AppCompatActivity {
                         PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
                 );
 
-                // Schedule alarms
                 alarmManager.setExact(AlarmManager.RTC_WAKEUP, startDate.getTime(), startPendingIntent);
                 alarmManager.setExact(AlarmManager.RTC_WAKEUP, endDate.getTime(), endPendingIntent);
             }
@@ -174,7 +187,7 @@ public class VacationDetailsActivity extends AppCompatActivity {
         }
     }
 
-    @RequiresApi(31) // For Android 12 and above
+    @RequiresApi(31)
     private void checkExactAlarmPermission() {
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         if (!alarmManager.canScheduleExactAlarms()) {
@@ -190,7 +203,6 @@ public class VacationDetailsActivity extends AppCompatActivity {
         }
     }
 
-    // Validates if the date is in MM/dd/yy format
     private boolean isValidDate(String date) {
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy", Locale.US);
         sdf.setLenient(false);
@@ -202,7 +214,6 @@ public class VacationDetailsActivity extends AppCompatActivity {
         }
     }
 
-    // Validates if the end date is after the start date
     private boolean isEndDateAfterStartDate(String startDate, String endDate) {
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy", Locale.US);
         try {

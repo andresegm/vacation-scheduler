@@ -35,7 +35,6 @@ public class VacationRepository {
         executorService.execute(() -> vacationDAO.updateVacation(vacation));
     }
 
-
     // Delete a vacation with validation
     public void deleteVacation(Vacation vacation, DeletionCallback callback) {
         executorService.execute(() -> {
@@ -49,23 +48,34 @@ public class VacationRepository {
         });
     }
 
+    // Interface for deletion callback
     public interface DeletionCallback {
         void onSuccess();
         void onFailure(String message);
     }
-
 
     // Fetch all vacations
     public LiveData<List<Vacation>> getAllVacations() {
         return vacationDAO.getAllVacations();
     }
 
+    // Fetch excursions for a vacation
     public LiveData<List<Excursion>> getExcursionsForVacation(int vacationId) {
         return vacationDAO.getExcursionsForVacation(vacationId);
     }
 
+    // Insert an excursion
     public void insertExcursion(Excursion excursion) {
         executorService.execute(() -> vacationDAO.insertExcursion(excursion));
     }
 
+    // Update an excursion
+    public void updateExcursion(Excursion excursion) {
+        executorService.execute(() -> vacationDAO.updateExcursion(excursion));
+    }
+
+    // Delete an excursion
+    public void deleteExcursion(Excursion excursion) {
+        executorService.execute(() -> vacationDAO.deleteExcursion(excursion));
+    }
 }
