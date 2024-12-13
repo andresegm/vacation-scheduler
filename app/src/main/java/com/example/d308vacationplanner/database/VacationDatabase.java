@@ -35,6 +35,7 @@ public abstract class VacationDatabase extends RoomDatabase {
                                 @Override
                                 public void onCreate(@NonNull SupportSQLiteDatabase db) {
                                     super.onCreate(db);
+                                    /* Pre-populate database
                                     Executors.newSingleThreadExecutor().execute(() -> {
                                         VacationDAO dao = INSTANCE.vacationDAO();
 
@@ -46,7 +47,7 @@ public abstract class VacationDatabase extends RoomDatabase {
                                         dao.insertExcursion(new Excursion(0, "Snorkeling", "03/21/2024", 1)); // Associated with Spring Break
                                         dao.insertExcursion(new Excursion(0, "Hiking", "03/23/2024", 1));     // Associated with Spring Break
                                         dao.insertExcursion(new Excursion(0, "City Tour", "07/05/2024", 2));  // Associated with Summer Vacation
-                                    });
+                                    });*/
                                 }
 
                             })
