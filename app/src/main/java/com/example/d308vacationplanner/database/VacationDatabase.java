@@ -35,15 +35,20 @@ public abstract class VacationDatabase extends RoomDatabase {
                                 @Override
                                 public void onCreate(@NonNull SupportSQLiteDatabase db) {
                                     super.onCreate(db);
-                                    Log.d("VacationDatabase", "onCreate callback triggered.");
                                     Executors.newSingleThreadExecutor().execute(() -> {
-                                        Log.d("VacationDatabase", "Prepopulating database.");
                                         VacationDAO dao = INSTANCE.vacationDAO();
+
+                                        // Insert sample vacations
                                         dao.insertVacation(new Vacation(0, "Spring Break", "Grand Beach Resort", "03/20/2024", "03/27/2024"));
                                         dao.insertVacation(new Vacation(0, "Summer Vacation", "Sunny Paradise Hotel", "07/01/2024", "07/15/2024"));
-                                        Log.d("VacationDatabase", "Sample data inserted.");
+
+                                        // Insert sample excursions
+                                        dao.insertExcursion(new Excursion(0, "Snorkeling", "03/21/2024", 1)); // Associated with Spring Break
+                                        dao.insertExcursion(new Excursion(0, "Hiking", "03/23/2024", 1));     // Associated with Spring Break
+                                        dao.insertExcursion(new Excursion(0, "City Tour", "07/05/2024", 2));  // Associated with Summer Vacation
                                     });
                                 }
+
                             })
                             .build();
                 }

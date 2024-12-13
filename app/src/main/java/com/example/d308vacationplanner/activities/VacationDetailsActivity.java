@@ -14,14 +14,18 @@ import android.widget.Toast;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.d308vacationplanner.R;
+import com.example.d308vacationplanner.adapters.ExcursionAdapter;
 import com.example.d308vacationplanner.database.VacationRepository;
 import com.example.d308vacationplanner.entities.Vacation;
 import com.example.d308vacationplanner.receivers.VacationNotificationReceiver;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
@@ -49,11 +53,17 @@ public class VacationDetailsActivity extends AppCompatActivity {
         EditText endDateEditText = findViewById(R.id.vacation_end_date);
 
         Button saveButton = findViewById(R.id.button_save);
-        Button backButton = findViewById(R.id.button_back);
         Button shareButton = findViewById(R.id.button_share);
+        Button backButton = findViewById(R.id.button_back);
+
+        // RecyclerView for excursions
+        RecyclerView excursionList = findViewById(R.id.excursion_list);
+        excursionList.setLayoutManager(new LinearLayoutManager(this));
+        ExcursionAdapter excursionAdapter = new ExcursionAdapter(new ArrayList<>());
+        excursionList.setAdapter(excursionAdapter);
 
         // Retrieve vacation details from Intent
-        int vacationId = getIntent().getIntExtra("id", -1);
+        int vacationId = getIntent().getIntExtra("id", -1); // Ensure ID is passed from MainActivity
         String title = getIntent().getStringExtra("title");
         String hotel = getIntent().getStringExtra("hotel");
         String startDate = getIntent().getStringExtra("startDate");
@@ -64,6 +74,13 @@ public class VacationDetailsActivity extends AppCompatActivity {
         hotelEditText.setText(hotel);
         startDateEditText.setText(startDate);
         endDateEditText.setText(endDate);
+
+        // Observe excursions for this vacation
+        repository.getExcursionsForVacation(vacationId).observe(this, excursions -> {
+            if (excursions != null) {
+                excursionAdapter.updateData(excursions);
+            }
+        });
 
         // Save button functionality
         saveButton.setOnClickListener(v -> {
@@ -97,9 +114,6 @@ public class VacationDetailsActivity extends AppCompatActivity {
             finish(); // Close the activity
         });
 
-        // Back button functionality
-        backButton.setOnClickListener(v -> finish());
-
         // Share button functionality
         shareButton.setOnClickListener(v -> {
             String vacationDetails = "Vacation Details:\n" +
@@ -108,12 +122,15 @@ public class VacationDetailsActivity extends AppCompatActivity {
                     "Start Date: " + startDateEditText.getText().toString() + "\n" +
                     "End Date: " + endDateEditText.getText().toString();
 
-            Intent shareIntent = new Intent();
-            shareIntent.setAction(Intent.ACTION_SEND);
-            shareIntent.putExtra(Intent.EXTRA_TEXT, vacationDetails);
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setType("text/plain");
+            shareIntent.putExtra(Intent.EXTRA_TEXT, vacationDetails);
+
             startActivity(Intent.createChooser(shareIntent, "Share Vacation Details"));
         });
+
+        // Back button functionality
+        backButton.setOnClickListener(v -> finish());
     }
 
     // Method to schedule vacation notifications

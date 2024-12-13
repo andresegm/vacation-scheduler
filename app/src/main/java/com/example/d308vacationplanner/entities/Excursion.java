@@ -22,6 +22,18 @@ public class Excursion {
     private String date; // Excursion date in MM/dd/yy format
     private int vacationId; // Foreign key linking to Vacation
 
+    // Constructor with all fields
+    public Excursion(int id, String title, String date, int vacationId) {
+        this.id = id;
+        this.title = title;
+        this.date = date;
+        this.vacationId = vacationId;
+    }
+
+    // Default no-argument constructor (required by Room)
+    public Excursion() {
+    }
+
     // Getters and Setters
     public int getId() {
         return id;

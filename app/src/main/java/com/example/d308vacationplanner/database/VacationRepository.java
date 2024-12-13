@@ -6,6 +6,7 @@ import android.util.Log;
 import androidx.lifecycle.LiveData;
 
 import com.example.d308vacationplanner.dao.VacationDAO;
+import com.example.d308vacationplanner.entities.Excursion;
 import com.example.d308vacationplanner.entities.Vacation;
 
 import java.util.List;
@@ -58,4 +59,13 @@ public class VacationRepository {
     public LiveData<List<Vacation>> getAllVacations() {
         return vacationDAO.getAllVacations();
     }
+
+    public LiveData<List<Excursion>> getExcursionsForVacation(int vacationId) {
+        return vacationDAO.getExcursionsForVacation(vacationId);
+    }
+
+    public void insertExcursion(Excursion excursion) {
+        executorService.execute(() -> vacationDAO.insertExcursion(excursion));
+    }
+
 }
