@@ -147,7 +147,7 @@ public class VacationDetailsActivity extends AppCompatActivity {
                 Toast.makeText(this, "Excursion deleted", Toast.LENGTH_SHORT).show();
                 break;
             case "EDIT":
-                Toast.makeText(this, "Edit functionality not implemented yet", Toast.LENGTH_SHORT).show();
+                showEditExcursionDialog(excursion);
                 break;
         }
     }
@@ -291,4 +291,49 @@ public class VacationDetailsActivity extends AppCompatActivity {
             return false;
         }
     }
+
+    private void showEditExcursionDialog(Excursion excursion) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        builder.setTitle("Edit Excursion");
+        builder.setView(inflater.inflate(R.layout.dialog_edit_excursion, null))
+                .setPositiveButton("Save", (dialog, id) -> {
+                    AlertDialog alertDialog = (AlertDialog) dialog;
+                    EditText titleInput = alertDialog.findViewById(R.id.excursion_edit_title_input);
+                    EditText dateInput = alertDialog.findViewById(R.id.excursion_edit_date_input);
+
+                    if (titleInput != null && dateInput != null) {
+                        String updatedTitle = titleInput.getText().toString().trim();
+                        String updatedDate = dateInput.getText().toString().trim();
+
+                        if (updatedTitle.isEmpty() || updatedDate.isEmpty()) {
+                            Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        if (!isValidDate(updatedDate)) {
+                            Toast.makeText(this, "Invalid date format. Use MM/dd/yyyy.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        excursion.setTitle(updatedTitle);
+                        excursion.setDate(updatedDate);
+                        repository.updateExcursion(excursion);
+                        Toast.makeText(this, "Excursion updated", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("Cancel", (dialog, id) -> dialog.dismiss())
+                .create()
+                .show();
+
+        // Pre-fill the fields with existing excursion details
+        AlertDialog alertDialog = builder.create();
+        alertDialog.setOnShowListener(dialog -> {
+            EditText titleInput = alertDialog.findViewById(R.id.excursion_edit_title_input);
+            EditText dateInput = alertDialog.findViewById(R.id.excursion_edit_date_input);
+            if (titleInput != null) titleInput.setText(excursion.getTitle());
+            if (dateInput != null) dateInput.setText(excursion.getDate());
+        });
+    }
+
 }
