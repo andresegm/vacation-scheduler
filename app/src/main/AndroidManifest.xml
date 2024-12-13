@@ -19,6 +19,9 @@
             android:name=".receivers.VacationNotificationReceiver"
             android:enabled="true"
             android:exported="true" />
+        <receiver android:name=".receivers.ExcursionNotificationReceiver"
+            android:enabled="true"
+            android:exported="true"/>
         <activity
             android:name=".MainActivity"
             android:exported="true">

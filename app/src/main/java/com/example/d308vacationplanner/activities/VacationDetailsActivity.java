@@ -23,6 +23,7 @@ import com.example.d308vacationplanner.adapters.ExcursionAdapter;
 import com.example.d308vacationplanner.database.VacationRepository;
 import com.example.d308vacationplanner.entities.Excursion;
 import com.example.d308vacationplanner.entities.Vacation;
+import com.example.d308vacationplanner.receivers.ExcursionNotificationReceiver;
 import com.example.d308vacationplanner.receivers.VacationNotificationReceiver;
 
 import java.text.ParseException;
@@ -47,7 +48,7 @@ public class VacationDetailsActivity extends AppCompatActivity {
             checkExactAlarmPermission();
         }
 
-        // Initialize repository
+        // Initialize the repository
         repository = new VacationRepository(getApplicationContext());
 
         // Bind views
@@ -61,7 +62,7 @@ public class VacationDetailsActivity extends AppCompatActivity {
         Button backButton = findViewById(R.id.button_back);
         Button addExcursionButton = findViewById(R.id.button_add_excursion);
 
-        // RecyclerView for excursions
+        // Setup RecyclerView for excursions
         RecyclerView excursionList = findViewById(R.id.excursion_list);
         excursionList.setLayoutManager(new LinearLayoutManager(this));
         excursionAdapter = new ExcursionAdapter(new ArrayList<>(), this::handleExcursionAction);
@@ -87,32 +88,37 @@ public class VacationDetailsActivity extends AppCompatActivity {
             }
         });
 
-        // Save button functionality
+        // Save button functionality: Save updated vacation details
         saveButton.setOnClickListener(v -> {
             String updatedTitle = titleEditText.getText().toString();
             String updatedHotel = hotelEditText.getText().toString();
             String updatedStartDate = startDateEditText.getText().toString();
             String updatedEndDate = endDateEditText.getText().toString();
 
+            // Validate date format
             if (!isValidDate(updatedStartDate) || !isValidDate(updatedEndDate)) {
                 Toast.makeText(this, "Invalid date format. Please use MM/dd/yy.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
+            // Validate date order
             if (!isEndDateAfterStartDate(updatedStartDate, updatedEndDate)) {
                 Toast.makeText(this, "End date must be after the start date.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
+            // Update vacation object and database
             Vacation updatedVacation = new Vacation(vacationId, updatedTitle, updatedHotel, updatedStartDate, updatedEndDate);
-
             repository.updateVacation(updatedVacation);
+
+            // Schedule vacation notifications
             scheduleNotifications(updatedVacation);
+
             Toast.makeText(this, "Vacation updated successfully", Toast.LENGTH_SHORT).show();
-            finish();
+            finish(); // Close activity
         });
 
-        // Share button functionality
+        // Share button functionality: Share vacation details
         shareButton.setOnClickListener(v -> {
             String vacationDetails = "Vacation Details:\n" +
                     "Title: " + titleEditText.getText().toString() + "\n" +
@@ -123,17 +129,17 @@ public class VacationDetailsActivity extends AppCompatActivity {
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setType("text/plain");
             shareIntent.putExtra(Intent.EXTRA_TEXT, vacationDetails);
-
             startActivity(Intent.createChooser(shareIntent, "Share Vacation Details"));
         });
 
-        // Add Excursion button functionality
+        // Add Excursion button functionality: Open Add Excursion dialog
         addExcursionButton.setOnClickListener(v -> showAddExcursionDialog());
 
-        // Back button functionality
+        // Back button functionality: Close this screen
         backButton.setOnClickListener(v -> finish());
     }
 
+    // Handle actions for individual excursions
     private void handleExcursionAction(Excursion excursion, String action) {
         switch (action) {
             case "DELETE":
@@ -146,6 +152,7 @@ public class VacationDetailsActivity extends AppCompatActivity {
         }
     }
 
+    // Show a dialog to add a new excursion
     private void showAddExcursionDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
@@ -172,6 +179,7 @@ public class VacationDetailsActivity extends AppCompatActivity {
 
                         Excursion newExcursion = new Excursion(0, title, date, vacationId);
                         repository.insertExcursion(newExcursion);
+                        scheduleExcursionNotification(newExcursion);
                         Toast.makeText(this, "Excursion added", Toast.LENGTH_SHORT).show();
                     }
                 })
@@ -180,6 +188,7 @@ public class VacationDetailsActivity extends AppCompatActivity {
                 .show();
     }
 
+    // Schedule notifications for a vacation
     private void scheduleNotifications(Vacation vacation) {
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy", Locale.US);
@@ -214,6 +223,34 @@ public class VacationDetailsActivity extends AppCompatActivity {
             }
         } catch (ParseException e) {
             Log.e("VacationDetailsActivity", "Error parsing dates", e);
+        }
+    }
+
+    // Schedule notification for an excursion
+    private void scheduleExcursionNotification(Excursion excursion) {
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
+
+        try {
+            Date excursionDate = sdf.parse(excursion.getDate());
+            if (excursionDate != null) {
+                Intent intent = new Intent(this, ExcursionNotificationReceiver.class);
+                intent.putExtra("title", excursion.getTitle());
+
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                        this,
+                        excursion.getId(),
+                        intent,
+                        PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+                );
+
+                if (alarmManager != null) {
+                    alarmManager.setExact(AlarmManager.RTC_WAKEUP, excursionDate.getTime(), pendingIntent);
+                    Toast.makeText(this, "Alert set for " + excursion.getTitle(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        } catch (ParseException e) {
+            Toast.makeText(this, "Failed to set alert. Invalid date format.", Toast.LENGTH_SHORT).show();
         }
     }
 
