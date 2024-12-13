@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -127,11 +128,7 @@ public class VacationDetailsActivity extends AppCompatActivity {
         });
 
         // Add Excursion button functionality
-        addExcursionButton.setOnClickListener(v -> {
-            Excursion newExcursion = new Excursion(0, "New Excursion", "12/25/2024", vacationId);
-            repository.insertExcursion(newExcursion);
-            Toast.makeText(this, "Excursion added", Toast.LENGTH_SHORT).show();
-        });
+        addExcursionButton.setOnClickListener(v -> showAddExcursionDialog());
 
         // Back button functionality
         backButton.setOnClickListener(v -> finish());
@@ -144,10 +141,43 @@ public class VacationDetailsActivity extends AppCompatActivity {
                 Toast.makeText(this, "Excursion deleted", Toast.LENGTH_SHORT).show();
                 break;
             case "EDIT":
-                // Logic for editing excursions
                 Toast.makeText(this, "Edit functionality not implemented yet", Toast.LENGTH_SHORT).show();
                 break;
         }
+    }
+
+    private void showAddExcursionDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        builder.setTitle("Add Excursion");
+        builder.setView(inflater.inflate(R.layout.dialog_add_excursion, null))
+                .setPositiveButton("Add", (dialog, id) -> {
+                    AlertDialog alertDialog = (AlertDialog) dialog;
+                    EditText titleInput = alertDialog.findViewById(R.id.excursion_title_input);
+                    EditText dateInput = alertDialog.findViewById(R.id.excursion_date_input);
+
+                    if (titleInput != null && dateInput != null) {
+                        String title = titleInput.getText().toString().trim();
+                        String date = dateInput.getText().toString().trim();
+
+                        if (title.isEmpty() || date.isEmpty()) {
+                            Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        if (!isValidDate(date)) {
+                            Toast.makeText(this, "Invalid date format. Use MM/dd/yyyy.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        Excursion newExcursion = new Excursion(0, title, date, vacationId);
+                        repository.insertExcursion(newExcursion);
+                        Toast.makeText(this, "Excursion added", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("Cancel", (dialog, id) -> dialog.dismiss())
+                .create()
+                .show();
     }
 
     private void scheduleNotifications(Vacation vacation) {
