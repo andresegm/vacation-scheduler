@@ -1,0 +1,102 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.VacationDetailsActivity">
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Vacation Title Input -->
+            <EditText
+                android:id="@+id/vacation_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Vacation Title" />
+
+            <!-- Hotel Name Input -->
+            <EditText
+                android:id="@+id/vacation_hotel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Hotel Name"
+                android:layout_marginTop="8dp" />
+
+            <!-- Start Date Input -->
+            <EditText
+                android:id="@+id/vacation_start_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Start Date (MM/dd/yy)"
+                android:layout_marginTop="8dp" />
+
+            <!-- End Date Input -->
+            <EditText
+                android:id="@+id/vacation_end_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="End Date (MM/dd/yy)"
+                android:layout_marginTop="8dp" />
+
+            <!-- Buttons Group -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginTop="16dp">
+
+                <!-- Save Button -->
+                <Button
+                    android:id="@+id/button_save"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Save"
+                    android:layout_marginEnd="8dp" />
+
+                <!-- Share Button -->
+                <Button
+                    android:id="@+id/button_share"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Share"
+                    android:layout_marginEnd="8dp" />
+
+                <!-- Back Button -->
+                <Button
+                    android:id="@+id/button_back"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Back" />
+            </LinearLayout>
+
+            <!-- RecyclerView for Excursions -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/excursion_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp" />
+
+            <!-- Add Excursion Button -->
+            <Button
+                android:id="@+id/button_add_excursion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/add_excursion"
+                android:layout_marginTop="16dp" />
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

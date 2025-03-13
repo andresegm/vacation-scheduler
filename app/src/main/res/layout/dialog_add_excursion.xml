@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/excursion_title_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Excursion Title"
+        android:inputType="text" />
+
+    <EditText
+        android:id="@+id/excursion_date_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Excursion Date (MM/dd/yyyy)"
+        android:inputType="date" />
+</LinearLayout>
